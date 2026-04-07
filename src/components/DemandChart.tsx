@@ -47,16 +47,17 @@ export function DemandChart({ data, insight }: DemandChartProps) {
                 <stop offset="100%" stopColor="hsl(30, 95%, 55%)" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(140, 15%, 90%)" />
-            <XAxis dataKey="date" tick={{ fontSize: 12, fill: 'hsl(150,10%,45%)' }} />
-            <YAxis tick={{ fontSize: 12, fill: 'hsl(150,10%,45%)' }} />
+            <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+            <XAxis dataKey="date" tick={{ fontSize: 12 }} className="fill-muted-foreground" />
+            <YAxis tick={{ fontSize: 12 }} className="fill-muted-foreground" />
             <Tooltip
               contentStyle={{
-                background: 'hsl(0, 0%, 100%)',
-                border: '1px solid hsl(140, 15%, 90%)',
+                background: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
                 borderRadius: '12px',
                 boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
                 fontSize: '13px',
+                color: 'hsl(var(--foreground))',
               }}
             />
             <Area type="monotone" dataKey="actual" stroke="hsl(142, 72%, 29%)" fill="url(#actualGrad)" strokeWidth={2.5} dot={{ r: 4, fill: 'hsl(142, 72%, 29%)' }} name="Actual" />
