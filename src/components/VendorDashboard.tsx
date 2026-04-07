@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { BarChart3, TrendingUp, AlertTriangle, Users, Upload, Play, Zap, ChefHat } from 'lucide-react';
-import { getPrediction, getSurplus, getNearbyNGOs, getKPIs, sendDonationRequest, getExplainability } from '@/services/api';
+import { TrendingUp, AlertTriangle, Users, Upload, Play, Zap, ChefHat } from 'lucide-react';
+import { getPrediction, getSurplus, getNearbyNGOs, getKPIs, getExplainability } from '@/services/api';
 import type { PredictionItem, DemandPoint, SurplusItem, NGO, KPIs } from '@/services/api';
 import { KPICard } from '@/components/KPICard';
 import { DemandChart } from '@/components/DemandChart';
@@ -11,6 +11,10 @@ import { PredictionCards } from '@/components/PredictionCards';
 import { ImpactSection } from '@/components/ImpactSection';
 import { Explainability } from '@/components/Explainability';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
+import { NGOMap } from '@/components/NGOMap';
+import { LiveActivityFeed } from '@/components/LiveActivityFeed';
+import { TrustScore } from '@/components/TrustScore';
+import { DonationFlow } from '@/components/DonationFlow';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -22,13 +26,16 @@ export function VendorDashboard() {
   const [insight, setInsight] = useState('');
   const [surplus, setSurplus] = useState<SurplusItem[]>([]);
   const [totalMeals, setTotalMeals] = useState(0);
+  const [ngos, setNgos] = useState<NGO[]>([]);
   const [bestMatch, setBestMatch] = useState<NGO | null>(null);
+  const [selectedNGO, setSelectedNGO] = useState<NGO | null>(null);
   const [reasons, setReasons] = useState<string[]>([]);
   const [demoRunning, setDemoRunning] = useState(false);
+  const [showDonationFlow, setShowDonationFlow] = useState(false);
 
   const loadData = async () => {
     setLoading(true);
-    const [kpiData, predData, surplusData, ngos, explainData] = await Promise.all([
+    const [kpiData, predData, surplusData, ngoData, explainData] = await Promise.all([
       getKPIs(), getPrediction(), getSurplus(), getNearbyNGOs(), getExplainability(),
     ]);
     setKpis(kpiData);
@@ -37,19 +44,17 @@ export function VendorDashboard() {
     setInsight(predData.insight);
     setSurplus(surplusData.items);
     setTotalMeals(surplusData.totalMeals);
-    setBestMatch(ngos[0]);
+    setNgos(ngoData);
+    setBestMatch(ngoData[0]);
+    setSelectedNGO(ngoData[0]);
     setReasons(explainData);
     setLoading(false);
   };
 
   useEffect(() => { loadData(); }, []);
 
-  const handleDonate = async () => {
-    if (!bestMatch) return;
-    const res = await sendDonationRequest(surplus[0]?.id, bestMatch.id);
-    if (res.success) {
-      toast.success('Donation request sent!', { description: `${totalMeals} meals → ${bestMatch.name}` });
-    }
+  const handleDonate = () => {
+    setShowDonationFlow(true);
   };
 
   const runDemo = async () => {
@@ -74,7 +79,7 @@ export function VendorDashboard() {
 
   if (loading) {
     return (
-      <div className="p-6 space-y-6">
+      <div className="p-8 space-y-6">
         <Skeleton className="h-20 w-full rounded-2xl" />
         <div className="grid grid-cols-4 gap-4">
           {[1,2,3,4].map(i => <Skeleton key={i} className="h-32 rounded-2xl" />)}
@@ -85,22 +90,22 @@ export function VendorDashboard() {
   }
 
   return (
-    <div className="p-6 space-y-6 max-w-[1200px] mx-auto">
+    <div className="p-8 space-y-8 max-w-[1200px] mx-auto">
       {/* Hero */}
-      <div className="space-y-1" style={{ animation: 'slideUp 0.5s ease-out' }}>
+      <div className="space-y-2" style={{ animation: 'slideUp 0.5s ease-out' }}>
         <h1 className="text-2xl font-bold text-foreground">
           {greeting()} <span className="text-muted-foreground font-normal">— here's your food intelligence overview</span>
         </h1>
         {totalMeals > 0 && (
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-sm font-medium mt-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-sm font-medium mt-1">
             <AlertTriangle className="w-4 h-4" />
-            Surplus detected: {totalMeals} meals
+            Surplus detected: {totalMeals} meals · Updated just now
           </div>
         )}
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4" style={{ animation: 'slideUp 0.6s ease-out' }}>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-5" style={{ animation: 'slideUp 0.6s ease-out' }}>
         <KPICard
           title="Predicted Demand"
           value={<AnimatedCounter end={kpis?.predictedDemand ?? 0} />}
@@ -146,6 +151,16 @@ export function VendorDashboard() {
         </div>
       </div>
 
+      {/* Map + Trust Score */}
+      <div className="grid lg:grid-cols-3 gap-6" style={{ animation: 'slideUp 0.85s ease-out' }}>
+        <div className="lg:col-span-2">
+          <NGOMap ngos={ngos} bestMatchId={bestMatch?.id} selectedNGO={selectedNGO} onSelectNGO={setSelectedNGO} />
+        </div>
+        <div className="space-y-6">
+          {selectedNGO && <TrustScore ngo={selectedNGO} />}
+        </div>
+      </div>
+
       {/* Surplus + Explainability */}
       <div className="grid lg:grid-cols-3 gap-6" style={{ animation: 'slideUp 0.9s ease-out' }}>
         <div className="lg:col-span-2">
@@ -154,9 +169,12 @@ export function VendorDashboard() {
         <Explainability reasons={reasons} />
       </div>
 
-      {/* Impact */}
-      <div style={{ animation: 'slideUp 1s ease-out' }}>
-        <ImpactSection foodSaved={kpis?.foodSaved ?? 0} peopleFed={kpis?.peopleFed ?? 0} impactScore={kpis?.impactScore ?? 0} />
+      {/* Impact + Activity Feed */}
+      <div className="grid lg:grid-cols-3 gap-6" style={{ animation: 'slideUp 1s ease-out' }}>
+        <div className="lg:col-span-2">
+          <ImpactSection foodSaved={kpis?.foodSaved ?? 0} peopleFed={kpis?.peopleFed ?? 0} impactScore={kpis?.impactScore ?? 0} />
+        </div>
+        <LiveActivityFeed />
       </div>
 
       {/* Quick Actions */}
@@ -170,6 +188,18 @@ export function VendorDashboard() {
           </Button>
         </div>
       </div>
+
+      {/* Donation Flow Modal */}
+      {showDonationFlow && bestMatch && (
+        <DonationFlow
+          items={surplus}
+          ngo={bestMatch}
+          onClose={() => setShowDonationFlow(false)}
+          onComplete={() => {
+            toast.success('Donation cycle complete! 🎉');
+          }}
+        />
+      )}
     </div>
   );
 }
