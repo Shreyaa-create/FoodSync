@@ -1,8 +1,13 @@
 import { Link } from 'react-router-dom';
-import { Leaf, ArrowRight, BarChart3, Heart, Sparkles, TrendingUp, Shield, Zap } from 'lucide-react';
+import { Leaf, ArrowRight, Sparkles, TrendingUp, Shield, Zap, MapPin, Clock, BarChart3, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Index() {
+  const { theme, toggleTheme } = useTheme();
+  const { isAuthenticated, role } = useAuth();
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Nav */}
@@ -15,19 +20,32 @@ export default function Index() {
             <span className="text-xl font-bold text-foreground">FoodSync</span>
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/vendor">
-              <Button variant="outline" size="sm">Vendor Login</Button>
-            </Link>
-            <Link to="/ngo">
-              <Button size="sm" className="bg-primary text-primary-foreground">NGO Login</Button>
-            </Link>
+            <button onClick={toggleTheme} className="p-2 rounded-xl hover:bg-muted transition-colors">
+              {theme === 'light' ? <Moon className="w-4 h-4 text-muted-foreground" /> : <Sun className="w-4 h-4 text-muted-foreground" />}
+            </button>
+            {isAuthenticated ? (
+              <Link to={`/${role}`}>
+                <Button size="sm" className="bg-primary text-primary-foreground gap-2">
+                  Go to Dashboard <ArrowRight className="w-3.5 h-3.5" />
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/login?role=vendor">
+                  <Button variant="outline" size="sm">Vendor Login</Button>
+                </Link>
+                <Link to="/login?role=ngo">
+                  <Button size="sm" className="bg-primary text-primary-foreground">NGO Login</Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
 
       {/* Hero */}
       <main className="flex-1">
-        <section className="max-w-6xl mx-auto px-6 py-20 text-center" style={{ animation: 'slideUp 0.6s ease-out' }}>
+        <section className="max-w-6xl mx-auto px-6 py-24 text-center" style={{ animation: 'slideUp 0.6s ease-out' }}>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
             <Sparkles className="w-4 h-4" />
             Agentic AI-Powered Food Redistribution
@@ -37,20 +55,41 @@ export default function Index() {
             <span className="gradient-text">Eliminate waste.</span>{' '}
             Feed communities.
           </h1>
-          <p className="text-lg text-muted-foreground mt-6 max-w-xl mx-auto">
+          <p className="text-lg text-muted-foreground mt-6 max-w-xl mx-auto leading-relaxed">
             FoodSync uses intelligent AI agents to predict food demand, detect surplus automatically, and redistribute it to those who need it most.
           </p>
-          <div className="flex items-center justify-center gap-4 mt-8">
-            <Link to="/vendor">
+          <div className="flex items-center justify-center gap-4 mt-10">
+            <Link to="/login?role=vendor">
               <Button size="lg" className="bg-primary text-primary-foreground gap-2 px-8 h-12 text-base">
-                Get Started <ArrowRight className="w-4 h-4" />
+                Login as Vendor <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
-            <Link to="/vendor">
+            <Link to="/login?role=ngo">
               <Button size="lg" variant="outline" className="gap-2 h-12 text-base">
-                View Demo
+                Login as NGO
               </Button>
             </Link>
+          </div>
+        </section>
+
+        {/* Why FoodSync */}
+        <section className="max-w-6xl mx-auto px-6 pb-20">
+          <p className="text-center text-sm font-medium text-muted-foreground mb-8">Why is this better than calling an NGO?</p>
+          <div className="grid md:grid-cols-4 gap-5">
+            {[
+              { icon: Zap, title: 'Faster Matching', desc: 'AI matches surplus to NGOs in seconds, not hours of phone calls.' },
+              { icon: MapPin, title: 'Location Intelligence', desc: 'Finds the nearest NGO with capacity — optimized routes, less waste.' },
+              { icon: Clock, title: 'Urgency Handling', desc: 'Freshness timers auto-prioritize perishable items for immediate pickup.' },
+              { icon: Shield, title: 'Tracking & Reliability', desc: 'Full donation lifecycle tracking with NGO trust scores.' },
+            ].map((f, i) => (
+              <div key={f.title} className="glass-card p-6 hover:shadow-lg transition-all duration-300" style={{ animation: `slideUp ${0.8 + i * 0.12}s ease-out` }}>
+                <div className="p-3 bg-primary/10 rounded-xl w-fit">
+                  <f.icon className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="text-base font-semibold text-foreground mt-4">{f.title}</h3>
+                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{f.desc}</p>
+              </div>
+            ))}
           </div>
         </section>
 
@@ -60,9 +99,9 @@ export default function Index() {
             {[
               { icon: TrendingUp, title: 'Demand Prediction', desc: 'AI analyzes historical data, weather, and trends to forecast demand accurately.' },
               { icon: Shield, title: 'Autonomous Detection', desc: 'Smart agents continuously monitor and detect surplus before food goes to waste.' },
-              { icon: Zap, title: 'Instant Redistribution', desc: 'One-click donation matching connects surplus food with nearby NGOs in seconds.' },
+              { icon: BarChart3, title: 'Impact Analytics', desc: 'Track food saved, people fed, and your sustainability impact score in real-time.' },
             ].map((f, i) => (
-              <div key={f.title} className="glass-card p-6 hover:shadow-lg transition-all duration-300" style={{ animation: `slideUp ${0.8 + i * 0.15}s ease-out` }}>
+              <div key={f.title} className="glass-card p-6 hover:shadow-lg transition-all duration-300" style={{ animation: `slideUp ${1.2 + i * 0.15}s ease-out` }}>
                 <div className="p-3 bg-primary/10 rounded-xl w-fit">
                   <f.icon className="w-6 h-6 text-primary" />
                 </div>
