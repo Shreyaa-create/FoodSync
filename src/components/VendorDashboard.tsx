@@ -32,6 +32,22 @@ export function VendorDashboard() {
   const [reasons, setReasons] = useState<string[]>([]);
   const [demoRunning, setDemoRunning] = useState(false);
   const [showDonationFlow, setShowDonationFlow] = useState(false);
+  const [surplusPulse, setSurplusPulse] = useState(false);
+
+  // Simulate dynamic surplus updates every 20–30s
+  useEffect(() => {
+    if (loading) return;
+    let timer: ReturnType<typeof setTimeout>;
+    const tick = () => {
+      const delta = Math.floor(Math.random() * 5) - 2; // -2 to +2
+      setTotalMeals(prev => Math.max(0, prev + delta));
+      setSurplusPulse(true);
+      setTimeout(() => setSurplusPulse(false), 1500);
+      timer = setTimeout(tick, 20000 + Math.random() * 10000);
+    };
+    timer = setTimeout(tick, 20000 + Math.random() * 10000);
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   const loadData = async () => {
     setLoading(true);
