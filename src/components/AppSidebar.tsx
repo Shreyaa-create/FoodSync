@@ -1,20 +1,20 @@
 import { Link, useLocation } from 'react-router-dom';
-import { BarChart3, AlertTriangle, Heart, Settings, Home, TrendingUp, Leaf } from 'lucide-react';
+import { BarChart3, AlertTriangle, Heart, Settings, Home, TrendingUp, Leaf, Clock } from 'lucide-react';
 
 const vendorLinks = [
   { to: '/vendor', icon: Home, label: 'Dashboard' },
-  { to: '/vendor', icon: TrendingUp, label: 'Predictions', disabled: true },
-  { to: '/vendor', icon: AlertTriangle, label: 'Surplus', disabled: true },
-  { to: '/vendor', icon: Heart, label: 'Donations', disabled: true },
-  { to: '/vendor', icon: BarChart3, label: 'Analytics', disabled: true },
-  { to: '/vendor', icon: Settings, label: 'Settings', disabled: true },
+  { to: '/vendor/predictions', icon: TrendingUp, label: 'Predictions' },
+  { to: '/vendor/surplus', icon: AlertTriangle, label: 'Surplus' },
+  { to: '/vendor/donations', icon: Heart, label: 'Donations' },
+  { to: '/vendor/analytics', icon: BarChart3, label: 'Analytics' },
+  { to: '/vendor/settings', icon: Settings, label: 'Settings' },
 ];
 
 const ngoLinks = [
   { to: '/ngo', icon: Home, label: 'Dashboard' },
-  { to: '/ngo', icon: Heart, label: 'Donations', disabled: true },
-  { to: '/ngo', icon: BarChart3, label: 'History', disabled: true },
-  { to: '/ngo', icon: Settings, label: 'Settings', disabled: true },
+  { to: '/ngo/donations', icon: Heart, label: 'Donations' },
+  { to: '/ngo/history', icon: Clock, label: 'History' },
+  { to: '/ngo/settings', icon: Settings, label: 'Settings' },
 ];
 
 export function AppSidebar({ role }: { role: 'vendor' | 'ngo' }) {
@@ -36,14 +36,13 @@ export function AppSidebar({ role }: { role: 'vendor' | 'ngo' }) {
       </div>
       <nav className="flex-1 p-3 space-y-1">
         {links.map((link) => {
-          const active = location.pathname === link.to && !link.disabled;
+          const active = location.pathname === link.to;
           return (
             <Link
               key={link.label}
-              to={link.disabled ? '#' : link.to}
+              to={link.to}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
                 ${active ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}
-                ${link.disabled ? 'opacity-50 cursor-not-allowed' : ''}
               `}
             >
               <link.icon className="w-4.5 h-4.5" />
