@@ -32,6 +32,22 @@ export function VendorDashboard() {
   const [reasons, setReasons] = useState<string[]>([]);
   const [demoRunning, setDemoRunning] = useState(false);
   const [showDonationFlow, setShowDonationFlow] = useState(false);
+  const [surplusPulse, setSurplusPulse] = useState(false);
+
+  // Simulate dynamic surplus updates every 20–30s
+  useEffect(() => {
+    if (loading) return;
+    let timer: ReturnType<typeof setTimeout>;
+    const tick = () => {
+      const delta = Math.floor(Math.random() * 5) - 2; // -2 to +2
+      setTotalMeals(prev => Math.max(0, prev + delta));
+      setSurplusPulse(true);
+      setTimeout(() => setSurplusPulse(false), 1500);
+      timer = setTimeout(tick, 20000 + Math.random() * 10000);
+    };
+    timer = setTimeout(tick, 20000 + Math.random() * 10000);
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   const loadData = async () => {
     setLoading(true);
@@ -97,8 +113,8 @@ export function VendorDashboard() {
           {greeting()} <span className="text-muted-foreground font-normal">— here's your food intelligence overview</span>
         </h1>
         {totalMeals > 0 && (
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-sm font-medium mt-1">
-            <AlertTriangle className="w-4 h-4" />
+          <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-sm font-medium mt-1 transition-all duration-500 ${surplusPulse ? 'scale-105 ring-2 ring-accent/30' : ''}`}>
+            <AlertTriangle className={`w-4 h-4 ${surplusPulse ? 'animate-pulse' : ''}`} />
             Surplus detected: {totalMeals} meals · Updated just now
           </div>
         )}
