@@ -158,17 +158,6 @@ FoodSync aims to:
 - Blockchain-Based Transparency
 - IoT Smart Inventory Integration
 
----
-
-# 🏆 Hackathon Project
-
-Developed during a hackathon to build a scalable and socially impactful solution using AI, web technologies, and real-time data processing.
-
----
-
-# 👥 Team
-
-Team FoodSync 🚀
 
 ---
 
