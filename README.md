@@ -130,6 +130,115 @@ FoodSync/
 
 ---
 
+# ⚡ Installation & Setup
+
+## Prerequisites
+
+Make sure the following are installed:
+
+- Node.js
+- npm / yarn
+- Python 3.x
+- MongoDB / Firebase
+- Git
+
+---
+
+# 🔧 Clone the Repository
+
+```bash
+git clone https://github.com/your-username/FoodSync.git
+cd FoodSync
+```
+
+---
+
+# 📦 Frontend Setup
+
+```bash
+cd frontend
+npm install
+npm start
+```
+
+Frontend runs on:
+
+```bash
+http://localhost:3000
+```
+
+---
+
+# 🖥️ Backend Setup
+
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+Backend server runs on:
+
+```bash
+http://localhost:5000
+```
+
+---
+
+# 🤖 Machine Learning Setup
+
+```bash
+cd ml-model
+pip install -r requirements.txt
+python train_model.py
+```
+
+To run prediction module:
+
+```bash
+python predict.py
+```
+
+---
+
+# 🗄️ Environment Variables
+
+Create a `.env` file inside the backend directory.
+
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection
+JWT_SECRET=your_secret_key
+GOOGLE_MAPS_API_KEY=your_api_key
+```
+
+---
+
+# ▶️ Running the Complete Application
+
+### Step 1 — Start Backend
+
+```bash
+cd backend
+npm run dev
+```
+
+### Step 2 — Start Frontend
+
+```bash
+cd frontend
+npm start
+```
+
+### Step 3 — Run ML Module
+
+```bash
+cd ml-model
+python predict.py
+```
+
+---
+
 # 🔐 Security Features
 
 - JWT Authentication
@@ -157,7 +266,6 @@ FoodSync aims to:
 - Route Optimization
 - Blockchain-Based Transparency
 - IoT Smart Inventory Integration
-
 
 ---
 
